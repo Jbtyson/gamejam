@@ -36,6 +36,7 @@ Core.prototype = {
 		this.backBufferContext.fillRect(0, 0, WIDTH, HEIGHT);
 
 		context = this.backBufferContext;
+		context.font = 'normal 18pt Calibri';
     _this.game.render(elapsedTime, context);
 
 		this.screenContext.drawImage(this.backBuffer, 0, 0);

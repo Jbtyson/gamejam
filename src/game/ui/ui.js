@@ -13,7 +13,8 @@ UI.prototype = {
                                   new Vector2(190, 49),
                                   ResourceManager.images.blueButtonNeutral,
                                   ResourceManager.images.blueButtonHover,
-                                  ResourceManager.images.blueButtonPressed
+                                  ResourceManager.images.blueButtonPressed,
+                                  "Test"
                                   ),
                               null,
                               new Vector2(0, 4)
