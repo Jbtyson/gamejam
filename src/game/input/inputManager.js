@@ -14,13 +14,19 @@ var InputManager = function (game) {
 
 InputManager.prototype = {
 	update: function(elapsedTime) {
-    if(typeof this.hoveredElement !== "undefined" && this.hoveredElement !== null)
+    if(this.hoveredElement !== null)
       this.hoveredElement.hovering = false;
 
-    this.hoveredElement = this.checkForHitOnGui();
+    var newElement = this.checkForHitOnGui();
 
-    if(typeof this.hoveredElement !== "undefined" && this.hoveredElement !== null)
-      this.hoveredElement.hovering = true;
+    if(newElement !== null) {
+      if(newElement !== this.hoveredElement && this.hoveredElement !== null) {
+        this.hoveredElement.hovering = false;
+        this.hoveredElement.pressed = false;
+      }
+      newElement.hovering = true;
+    }
+    this.hoveredElement = newElement;
   },
 
 	render: function(elapsedTime, context) {
@@ -37,9 +43,10 @@ InputManager.prototype = {
       });
     });
 
-
     if (hits.length > 0)
       return this.getTopElement(hits);
+
+    return null;
   },
 
   getTopElement: function(elements) {
@@ -54,9 +61,15 @@ InputManager.prototype = {
     return elements[index];
   },
 
+  contains: function(position, size, v) {
+    return v.greaterThanOrEqualTo(position) && v.lessThanOrEqualTo(position.add(size));
+  },
+
   mousemove: function(e) {
 		var self = this;
     this.mousePosition = new Vector2(e.clientX - this.mouseOffset.x, e.clientY - this.mouseOffset.y);
+    if(this.hoveredElement !== null && !this.contains(this.hoveredElement.position, this.hoveredElement.size, this.mousePosition))
+      this.hoveredElement.pressed = false;
 	},
 
   /* mouse buttons:
@@ -68,7 +81,7 @@ InputManager.prototype = {
 		var _this = this;
 
 		if (e.button == 0) {
-      if(typeof this.hoveredElement !== "undefined" && this.hoveredElement !== null) {
+      if(this.hoveredElement !== null) {
         this.hoveredElement.hovering = false;
         this.hoveredElement.pressed = true;
       }
@@ -79,7 +92,7 @@ InputManager.prototype = {
 		var _this = this;
 
     if(e.button == 0) {
-      if(typeof this.hoveredElement !== "undefined" && this.hoveredElement !== null) {
+      if(this.hoveredElement !== null) {
         this.hoveredElement.hovering = true;
         this.hoveredElement.pressed = false;
       }

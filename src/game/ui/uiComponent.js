@@ -21,6 +21,5 @@ UIComponent.prototype = {
         context.drawImage(this.hoverImage, position.x, position.y);
       else
         context.drawImage(this.image, this.position.x, this.position.y);
-    }
   },
 }
