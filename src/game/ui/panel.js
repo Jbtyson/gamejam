@@ -4,6 +4,8 @@ var Panel = function (position, image, size) {
 	this.size = size;
 	this.components = [];
 	this.visible = true;
+	this.mousewheelUp = null;
+	this.mousewheelDown = null;
 }
 
 Panel.prototype = {
@@ -17,8 +19,9 @@ Panel.prototype = {
 		if(!this.visibile && this.image !== null)
 			context.drawImage(this.image, this.position.x, this.position.y)
 
+		var _this = this;
 		this.components.forEach(function(component) {
-			component.render(elapsedTime, context);
+			component.render(elapsedTime, context, _this.position, _this.size);
 		});
 	},
 
@@ -29,6 +32,13 @@ Panel.prototype = {
 
 	removeComponent(index) {
 		this.components.splice(index, 1);
+	},
+
+	translateComponents(vector) {
+		this.components.forEach(function(component) {
+			component.position = component.position.add(vector);
+			component.textPosition = component.textPosition.add(vector);
+		});
 	},
 
 	hide() {

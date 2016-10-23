@@ -45,31 +45,43 @@ UI.prototype = {
 
   createLeftPanel: function() {
     var panel = new Panel(new Vector2(0, 50), ResourceManager.images.leftPanel, new Vector2(307, 421));
-    var dinghyButton = new MovableComponent(
-                              new UIComponent(
-                                  new Vector2(10, 10),
-                                  0,
-                                  new Vector2(190, 49),
-                                  ResourceManager.images.blueButtonNeutral,
-                                  ResourceManager.images.blueButtonHover,
-                                  ResourceManager.images.blueButtonPressed,
-                                  "Dinghy",
-                                  "normal 18pt Calibri",
-                                  "white"
-                                  ),
-                              null,
-                              new Vector2(0, 4)
-                            );
-    var _this = this;
-    dinghyButton.onClick = function() {
-      _this.game.currencyManager.purchaseIncome(0);
+    for(var i = 0; i < this.game.currencyManager.incomes.length; i++) {
+      var button = new MovableComponent(
+                                new UIComponent(
+                                    new Vector2(10, 10 + (59 * i)),
+                                    0,
+                                    new Vector2(190, 49),
+                                    ResourceManager.images.blueButtonNeutral,
+                                    ResourceManager.images.blueButtonHover,
+                                    ResourceManager.images.blueButtonPressed,
+                                    this.game.currencyManager.incomes[i].name,
+                                    "normal 18pt Calibri",
+                                    "white"
+                                    ),
+                                null,
+                                new Vector2(0, 4)
+                              );
+      button.incomeIndex = i;
+      var _this = this;
+      button.onClick = function() {
+        _this.game.currencyManager.purchaseIncome(this.incomeIndex);
+      }
+      panel.addComponent(button);
     }
-    panel.addComponent(dinghyButton);
+
+    panel.mousewheelUp = function() {
+      panel.translateComponents(new Vector2(0, 25));
+    }
+
+    panel.mousewheelDown = function() {
+      panel.translateComponents(new Vector2(0, -25));
+    }
+
     return panel;
   },
 
   createRightPanel: function() {
-    var panel = new Panel(new Vector2(600, 300), null, new Vector2(190, 9))
+    var panel = new Panel(new Vector2(600, 300), null, new Vector2(190, 49))
     var clickerComponent = new MovableComponent(
                               new UIComponent(
                                   new Vector2(),
@@ -104,4 +116,30 @@ UI.prototype = {
       panel.render(elapsedTime, context);
     });
 	},
+
+  onMousewheelUp: function() {
+    var hoveredPanel = null;
+    var _this = this;
+    this.panels.forEach(function(panel) {
+      if(_this.contains(panel.position, panel.size, _this.game.inputManager.mousePosition))
+        hoveredPanel = panel;
+    });
+    if(hoveredPanel !== null && hoveredPanel.mousewheelUp !== null)
+      hoveredPanel.mousewheelUp();
+  },
+
+  onMousewheelDown: function() {
+    var hoveredPanel = null;
+    var _this = this;
+    this.panels.forEach(function(panel) {
+      if(_this.contains(panel.position, panel.size, _this.game.inputManager.mousePosition))
+        hoveredPanel = panel;
+    });
+    if(hoveredPanel !== null && hoveredPanel.mousewheelUp !== null)
+      hoveredPanel.mousewheelDown();
+  },
+
+  contains: function(position, size, v) {
+    return v.greaterThanOrEqualTo(position) && v.lessThanOrEqualTo(position.add(size));
+  },
 }

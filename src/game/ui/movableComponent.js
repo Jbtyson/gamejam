@@ -14,7 +14,9 @@ var MovableComponent = function (component, hoverOffset, pressedOffset) {
   this.font = component.font
   this.textPosition = component.textPosition;
   this.textColor = component.textColor;
-  this.pressedLastFrame = component.pressedLastFrame
+  this.pressedLastFrame = component.pressedLastFrame;
+  this.renderPosition = new Vector2();
+  this.renderSize = this.size;
 }
 
 MovableComponent.prototype = {
@@ -30,7 +32,7 @@ MovableComponent.prototype = {
     this.extendedUpdate(elapsedTime);
   },
 
-	render: function(elapsedTime, context) {
+	render: function(elapsedTime, context, pposition, size) {
     if(this.textPosition === null) {
       context.font = this.font;
       var measureText = context.measureText(this.text);
@@ -38,14 +40,25 @@ MovableComponent.prototype = {
       this.textPosition = this.position.add(textOffset);
     }
 
+    var position = this.position;
+    var textPosition = this.textPosition;
+
+    if(this.position.y < pposition.y) {
+      this.renderPosition.y = pposition.y - this.position.y;
+      this.renderSize.y = this.size.y - (pposition.y - this.position.y);
+      position.y = pposition.y;
+    }
+
+    if (this.position.y + this.size.y > pposition.y + size.y)
+      this.renderSize.y = this.size.y - (this.position.y + this.size.y) - (pposition.y + size.y);
+
     if(this.visible && this.image !== null) {
-      var position = this.position;
-      var textPosition = this.textPosition;
       if(this.pressed && this.pressedImage !== null) {
-        if(typeof this.pressedOffset !== "undefined" && this.pressedOffset !== null) {}
+        if(typeof this.pressedOffset !== "undefined" && this.pressedOffset !== null) {
           position = position.add(this.pressedOffset);
           textPosition = textPosition.add(this.pressedOffset);
-        context.drawImage(this.pressedImage, position.x, position.y);
+          context.drawImage(this.pressedImage, this.renderPosition.x, this.renderPosition.y, this.renderSize.x, this.renderSize.y, position.x, position.y, this.renderSize.x, this.renderSize.y);
+        }
       }
       else if(this.hovering && this.hoverImage !== null) {
         var position = this.position;
@@ -53,12 +66,13 @@ MovableComponent.prototype = {
           position = position.add(this.hoverOffset);
           textPosition = textPosition.add(this.hoverOffset);
         }
-        context.drawImage(this.hoverImage, position.x, position.y);
+        context.drawImage(this.hoverImage, this.renderPosition.x, this.renderPosition.y, this.renderSize.x, this.renderSize.y, position.x, position.y, this.renderSize.x, this.renderSize.y);
       }
-      else
-        context.drawImage(this.image, this.position.x, this.position.y);
+      else {
+        context.drawImage(this.image, this.renderPosition.x, this.renderPosition.y, this.renderSize.x, this.renderSize.y, position.x, position.y, this.renderSize.x, this.renderSize.y);
+      }
 
-        if(this.text !== "" && this.font !== null){
+      if(this.text !== "" && this.font !== null) {
         context.font = this.font;
         context.fillStyle = this.textColor;
         context.fillText(this.text, textPosition.x, textPosition.y);

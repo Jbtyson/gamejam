@@ -44,7 +44,6 @@ Core.prototype = {
 	start: function() {
 		var _this = this;
 
-		//window.onkeydown = function (e) { _this.keyDown(e); };
 		window.oncontextmenu = function(e) {
 			e.preventDefault();
 			e.stopPropagation();
