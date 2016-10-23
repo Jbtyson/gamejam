@@ -1,5 +1,7 @@
-var Panel = function (position) {
+var Panel = function (position, image, size) {
 	this.position = position || new Vector2();
+	this.image = image;
+	this.size = size;
 	this.components = [];
 	this.visible = true;
 }
@@ -12,6 +14,9 @@ Panel.prototype = {
   },
 
 	render: function(elapsedTime, context) {
+		if(!this.visibile && this.image !== null)
+			context.drawImage(this.image, this.position.x, this.position.y)
+
 		this.components.forEach(function(component) {
 			component.render(elapsedTime, context);
 		});

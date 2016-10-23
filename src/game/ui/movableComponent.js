@@ -11,21 +11,34 @@ var MovableComponent = function (component, hoverOffset, pressedOffset) {
   this.pressed = component.false;
   this.visible = component.visible;
   this.text = component.text;
+  this.font = component.font
   this.textPosition = component.textPosition;
+  this.textColor = component.textColor;
+  this.pressedLastFrame = component.pressedLastFrame
 }
 
 MovableComponent.prototype = {
 	update: function(elapsedTime) {
+    if(!this.pressedLastFrame && this.pressed) {
+      this.onClick();
+      this.pressedLastFrame = true;
+    }
+    else if (this.pressedLastFrame && !this.pressed) {
+      this.pressedLastFrame = false;
+    }
+
+    this.extendedUpdate(elapsedTime);
   },
 
 	render: function(elapsedTime, context) {
     if(this.textPosition === null) {
+      context.font = this.font;
       var measureText = context.measureText(this.text);
       var textOffset = this.size.subtract(new Vector2(measureText.width, measureText.height)).divide(2);
       this.textPosition = this.position.add(textOffset);
     }
 
-    if(this.visible) {
+    if(this.visible && this.image !== null) {
       var position = this.position;
       var textPosition = this.textPosition;
       if(this.pressed && this.pressedImage !== null) {
@@ -45,7 +58,17 @@ MovableComponent.prototype = {
       else
         context.drawImage(this.image, this.position.x, this.position.y);
 
-      context.fillText(this.text, textPosition.x, textPosition.y);
+        if(this.text !== "" && this.font !== null){
+        context.font = this.font;
+        context.fillStyle = this.textColor;
+        context.fillText(this.text, textPosition.x, textPosition.y);
+      }
     }
 	},
+
+  onClick: function() {
+  },
+
+  extendedUpdate: function(elapsedTime) {
+  }
 }

@@ -1,4 +1,4 @@
-var UIComponent = function (position, depth, size, image, hoverImage, pressedImage, text) {
+var UIComponent = function (position, depth, size, image, hoverImage, pressedImage, text, font, textColor) {
   this.position = position || new Vector2();
   this.size = size;
   this.image = image;
@@ -10,10 +10,22 @@ var UIComponent = function (position, depth, size, image, hoverImage, pressedIma
   this.visible = true;
   this.text = text;
   this.textPosition = null;
+  this.font = font;
+  this.textColor = textColor;
+  this.pressedLastFrame = false;
 }
 
 UIComponent.prototype = {
 	update: function(elapsedTime) {
+    if(!this.pressedLastFrame && this.pressed) {
+      this.onClick();
+      this.pressedLastFrame = true;
+    }
+    else if (this.pressedLastFrame && !this.pressed) {
+      this.pressedLastFrame = false;
+    }
+
+    this.extendedUpdate(elapsedTime);
   },
 
 	render: function(elapsedTime, context) {
@@ -23,13 +35,24 @@ UIComponent.prototype = {
       this.textPosition = this.position.add(textOffset);
     }
 
-    if(this.visible)
-        context.drawImage(this.pressedImage, position.x, position.y);
+    if(this.visible & this.image !== null)
+      if(this.pressed && this.pressedImage !== null)
+        context.drawImage(this.pressedImage, this.position.x, this.position.y);
       else if(this.hovering && this.hoverImage !== null)
-        context.drawImage(this.hoverImage, position.x, position.y);
+        context.drawImage(this.hoverImage, this.position.x, this.position.y);
       else
         context.drawImage(this.image, this.position.x, this.position.y);
 
-    context.fillText(this.text, this.textPosition.x, this.textPosition.y);
+      if(this.text !== "" && this.font !== null){
+        context.font = this.font;
+        context.fillStyle = this.textColor;
+        context.fillText(this.text, this.textPosition.x, this.textPosition.y);
+      }
   },
+
+  onClick: function() {
+  },
+
+  extendedUpdate: function(elapsedTime) {
+  }
 }
