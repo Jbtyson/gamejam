@@ -103,8 +103,8 @@ InputManager.prototype = {
   mousewheel: function(e) {
     // negative is up
     if(e.deltaY < 0)
-      this.game.ui.onMousewheelUp();
+      Game.ui.onMousewheelUp();
     else if(e.deltaY > 0)
-      this.game.ui.onMousewheelDown();
+      Game.ui.onMousewheelDown();
   }
 }

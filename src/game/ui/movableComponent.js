@@ -15,8 +15,6 @@ var MovableComponent = function (component, hoverOffset, pressedOffset) {
   this.textPosition = component.textPosition;
   this.textColor = component.textColor;
   this.pressedLastFrame = component.pressedLastFrame;
-  this.renderPosition = new Vector2();
-  this.renderSize = this.size;
 }
 
 MovableComponent.prototype = {
@@ -42,34 +40,35 @@ MovableComponent.prototype = {
 
     var position = this.position;
     var textPosition = this.textPosition;
+    var renderPosition = new Vector2();
+    var renderSize = this.size;
 
-    if(this.position.y < pposition.y) {
-      this.renderPosition.y = pposition.y - this.position.y;
-      this.renderSize.y = this.size.y - (pposition.y - this.position.y);
+    if(position.y < pposition.y) {
+      renderPosition.y = pposition.y - position.y;
+      renderSize.y = this.size.y - (pposition.y - position.y);
       position.y = pposition.y;
     }
 
-    if (this.position.y + this.size.y > pposition.y + size.y)
-      this.renderSize.y = this.size.y - (this.position.y + this.size.y) - (pposition.y + size.y);
+    if (position.y + this.size.y > pposition.y + size.y)
+      renderSize.y = this.size.y - (position.y + this.size.y) - (pposition.y + size.y);
 
     if(this.visible && this.image !== null) {
       if(this.pressed && this.pressedImage !== null) {
         if(typeof this.pressedOffset !== "undefined" && this.pressedOffset !== null) {
           position = position.add(this.pressedOffset);
           textPosition = textPosition.add(this.pressedOffset);
-          context.drawImage(this.pressedImage, this.renderPosition.x, this.renderPosition.y, this.renderSize.x, this.renderSize.y, position.x, position.y, this.renderSize.x, this.renderSize.y);
+          context.drawImage(this.pressedImage, renderPosition.x, renderPosition.y, renderSize.x, renderSize.y, position.x, position.y, renderSize.x, renderSize.y);
         }
       }
       else if(this.hovering && this.hoverImage !== null) {
-        var position = this.position;
         if(typeof this.hoverOffset !== "undefined" && this.hoverOffset !== null) {
           position = position.add(this.hoverOffset);
           textPosition = textPosition.add(this.hoverOffset);
         }
-        context.drawImage(this.hoverImage, this.renderPosition.x, this.renderPosition.y, this.renderSize.x, this.renderSize.y, position.x, position.y, this.renderSize.x, this.renderSize.y);
+        context.drawImage(this.hoverImage, renderPosition.x, renderPosition.y, renderSize.x, renderSize.y, position.x, position.y, renderSize.x, renderSize.y);
       }
       else {
-        context.drawImage(this.image, this.renderPosition.x, this.renderPosition.y, this.renderSize.x, this.renderSize.y, position.x, position.y, this.renderSize.x, this.renderSize.y);
+        context.drawImage(this.image, renderPosition.x, renderPosition.y, renderSize.x, renderSize.y, position.x, position.y, renderSize.x, renderSize.y);
       }
 
       if(this.text !== "" && this.font !== null) {

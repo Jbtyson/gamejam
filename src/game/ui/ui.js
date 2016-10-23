@@ -70,11 +70,11 @@ UI.prototype = {
     }
 
     panel.mousewheelUp = function() {
-      panel.translateComponents(new Vector2(0, 25));
+      this.translateComponents(new Vector2(0, 25));
     }
 
     panel.mousewheelDown = function() {
-      panel.translateComponents(new Vector2(0, -25));
+      this.translateComponents(new Vector2(0, -25));
     }
 
     return panel;
@@ -106,6 +106,11 @@ UI.prototype = {
   },
 
 	update: function(elapsedTime) {
+    if(this.mouseWheelUp)
+      this.mousewheelUp();
+    else if (this.mouseWheelDown)
+      this.mousewheelDown();
+
     this.panels.forEach(function(panel) {
       panel.update(elapsedTime);
     });
@@ -118,6 +123,15 @@ UI.prototype = {
 	},
 
   onMousewheelUp: function() {
+    this.mouseWheelUp = true;
+  },
+
+  onMousewheelDown: function() {
+    this.mouseWheelDown = true;
+  },
+
+  mousewheelUp: function() {
+    this.mouseWheelUp = false;
     var hoveredPanel = null;
     var _this = this;
     this.panels.forEach(function(panel) {
@@ -128,7 +142,8 @@ UI.prototype = {
       hoveredPanel.mousewheelUp();
   },
 
-  onMousewheelDown: function() {
+  mousewheelDown: function() {
+    this.mouseWheelDown = false;
     var hoveredPanel = null;
     var _this = this;
     this.panels.forEach(function(panel) {

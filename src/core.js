@@ -4,6 +4,7 @@ var TIME_STEP = 1000/60;
 
 var ResourceManager = new ResourceManager();
 ResourceManager.load();
+var Game = new Game();
 
 var Core = function (canvasId) {
 	this.screen = document.getElementById(canvasId);
@@ -20,7 +21,7 @@ var Core = function (canvasId) {
 	this.fps = 0;
 	this.STARTING_FPS = 60;
 
-  this.game = new Game();
+  this.game = Game;
 }
 
 Core.prototype = {
